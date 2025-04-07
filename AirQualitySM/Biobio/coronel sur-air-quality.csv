@@ -1,6 +1,3 @@
-# Sensor Coronel Sur, Chile (Sistema Nacional de Calidad del Aire en Chile/816)
-# https://aqicn.org/station/@500230/
-# Daily so2
 date,min,max,median,q1,q3,stdev,count
 2024-08-18T00:00:00.000Z,3.71,3.71,3.71,3.71,3.71,0,1
 2024-08-19T00:00:00.000Z,1,2.45,1.2,1,1.4,0.465,11
