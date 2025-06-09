@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Calidad del Aire Chile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 18px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            background: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+
+        .tab-button.active {
+            color: #007bff;
+            background: white;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #007bff;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+            min-height: 600px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .filters-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .filter-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-placeholder {
+            height: 400px;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 8px 0;
+        }
+
+        .data-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .data-value {
+            font-weight: 600;
+            color: #007bff;
+        }
+
+        .conclusion-text {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+            font-style: italic;
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        .pie-chart-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .pie-placeholder {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: conic-gradient(#007bff 0deg 225deg, #28a745 225deg 315deg, #ffc107 315deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .legend {
+            flex: 1;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            margin-right: 15px;
+        }
+
+        .legend-text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .legend-percent {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .correlation-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .correlation-matrix {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .matrix-placeholder {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(45deg, #e3f2fd, #bbdefb);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1976d2;
+            font-weight: bold;
+            margin-top: 15px;
+            position: relative;
+        }
+
+        .zoom-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .zoom-button:hover {
+            background: #0056b3;
+        }
+
+        .tooltip {
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-row {
+                flex-direction: column;
+            }
+            
+            .pie-chart-container {
+                flex-direction: column;
+            }
+            
+            .correlation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Dashboard Interactivo Calidad del Aire en Chile</h1>
+            <p>Relación entre contaminación atmosférica, densidad vehicular, población e industria</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab(0)">Estaciones de monitoreo</button>
+            <button class="tab-button" onclick="showTab(1)">Tipo de fuentes contaminación</button>
+            <button class="tab-button" onclick="showTab(2)">Correlación de datos</button>
+        </div>
+
+        <!-- PESTAÑA 1: Estaciones de monitoreo -->
+        <div class="tab-content active">
+            <div class="filters-section">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label for="desde">Desde:</label>
+                        <select id="desde">
+                            <option value="2019">2019</option>
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023" selected>2023</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="hasta">Hasta:</label>
+                        <select id="hasta">
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                            <option value="2024" selected>2024</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="region">Región:</label>
+                        <select id="region">
+                            <option value="metropolitana" selected>Metropolitana</option>
+                            <option value="valparaiso">Valparaíso</option>
+                            <option value="biobio">Biobío</option>
+                            <option value="antofagasta">Antofagasta</option>
+                            <option value="araucania">Araucanía</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label for="contaminante">Contaminante:</label>
+                        <select id="contaminante">
+                            <option value="pm25" selected>PM2.5</option>
+                            <option value="pm10">PM10</option>
+                            <option value="co">CO</option>
+                            <option value="no2">NO2</option>
+                            <option value="so2">SO2</option>
+                            <option value="o3">O3</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="estacion">Estación:</label>
+                        <select id="estacion">
+                            <option value="todas" selected>Todas las estaciones</option>
+                            <option value="estacion1">Estación 1</option>
+                            <option value="estacion2">Estación 2</option>
+                            <option value="estacion3">Estación 3</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="chart-section">
+                    <h3>Mapa/Relación de variables</h3>
+                    <div class="chart-placeholder">
+                        Aquí irá el mapa interactivo o gráfico de relación
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-card">
+                        <h3>Datos de la región seleccionada</h3>
+                        <div class="data-row">
+                            <span class="data-label">Cantidad población:</span>
+                            <span class="data-value">7,112,808</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Porcentaje poblacional:</span>
+                            <span class="data-value">37.8%</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Permisos circulación:</span>
+                            <span class="data-value">2,850,000</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Porcentaje permisos:</span>
+                            <span class="data-value">45.2%</span>
+                        </div>
+                        
+                        <div class="conclusion-text">
+                            La región Metropolitana concentra la mayor cantidad de población y vehículos del país, mostrando una correlación directa entre densidad vehicular y niveles de PM2.5, especialmente en horarios punta.
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Datos de la estación seleccionada</h3>
+                        <div class="data-row">
+                            <span class="data-label">Estación-Región:</span>
+                            <span class="data-value">Las Condes - Metropolitana</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Contaminante principal:</span>
+                            <span class="data-value">PM2.5</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Nivel AQI:</span>
+                            <span class="data-value" title="Índice de Calidad del Aire: 51-100 = Moderado">78</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Riesgo para la salud:</span>
+                            <span class="data-value">Moderado</span>
+                        </div>
+                        
+                        <div class="tooltip">
+                            💡 Los valores AQI entre 51-100 indican calidad del aire moderada. Personas sensibles pueden experimentar síntomas menores.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 2: Tipo de fuentes de contaminación -->
+        <div class="tab-content">
+            <div class="filters-section">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label for="desde2">Desde:</label>
+                        <select id="desde2">
+                            <option value="2019">2019</option>
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023" selected>2023</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="hasta2">Hasta:</label>
+                        <select id="hasta2">
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                            <option value="2024" selected>2024</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="region2">Región:</label>
+                        <select id="region2">
+                            <option value="chile" selected>Todo Chile</option>
+                            <option value="metropolitana">Metropolitana</option>
+                            <option value="valparaiso">Valparaíso</option>
+                            <option value="biobio">Biobío</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="comuna">Comuna:</label>
+                        <select id="comuna">
+                            <option value="todas" selected>Todas</option>
+                            <option value="santiago">Santiago</option>
+                            <option value="valparaiso">Valparaíso</option>
+                            <option value="concepcion">Concepción</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="chart-section">
+                    <h3>Relación de tipos de fuentes de contaminación</h3>
+                    <div class="pie-chart-container">
+                        <div class="pie-placeholder">
+                            Gráfico Circular
+                        </div>
+                        <div class="legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #007bff;"></div>
+                                <span class="legend-text">Difusas</span>
+                                <span class="legend-percent">62.5%</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #28a745;"></div>
+                                <span class="legend-text">En Ruta</span>
+                                <span class="legend-percent">25%</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ffc107;"></div>
+                                <span class="legend-text">Puntuales</span>
+                                <span class="legend-percent">12.5%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-card">
+                        <h3>Información regional</h3>
+                        <div class="data-row">
+                            <span class="data-label">Empresa más emisora:</span>
+                            <span class="data-value">Codelco División Norte</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Combustible principal:</span>
+                            <span class="data-value">Diésel</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Sector más contaminante:</span>
+                            <span class="data-value">Transporte</span>
+                        </div>
+                        
+                        <div class="conclusion-text">
+                            Las fuentes difusas representan la mayor contribución a la contaminación, principalmente por el uso de combustibles fósiles en transporte y calefacción domiciliaria.
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <h3>Contaminantes vs Toneladas emitidas</h3>
+                        <div class="chart-placeholder" style="height: 250px;">
+                            Gráfico de barras - Emisiones por contaminante
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 3: Correlación de datos -->
+        <div class="tab-content">
+            <div class="filters-section">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label for="desde3">Desde:</label>
+                        <select id="desde3">
+                            <option value="2019">2019</option>
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023" selected>2023</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="hasta3">Hasta:</label>
+                        <select id="hasta3">
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                            <option value="2024" selected>2024</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="region3">Región:</label>
+                        <select id="region3">
+                            <option value="todas" selected>Todas las regiones</option>
+                            <option value="metropolitana">Metropolitana</option>
+                            <option value="valparaiso">Valparaíso</option>
+                            <option value="biobio">Biobío</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="correlation-grid">
+                <div class="correlation-matrix">
+                    <h3>PM2.5 vs PM10</h3>
+                    <div class="matrix-placeholder">
+                        <button class="zoom-button">🔍</button>
+                        Matriz de Correlación<br>PM2.5 - PM10
+                    </div>
+                </div>
+
+                <div class="correlation-matrix">
+                    <h3>Estaciones Monitoreo</h3>
+                    <div class="matrix-placeholder">
+                        <button class="zoom-button">🔍</button>
+                        Correlación entre<br>Estaciones 2 y 3
+                    </div>
+                </div>
+
+                <div class="correlation-matrix">
+                    <h3>Densidad Vehicular</h3>
+                    <div class="matrix-placeholder">
+                        <button class="zoom-button">🔍</button>
+                        Correlación<br>Vehículos vs Contaminación
+                    </div>
+                </div>
+
+                <div class="correlation-matrix">
+                    <h3>Población vs Industria</h3>
+                    <div class="matrix-placeholder">
+                        <button class="zoom-button">🔍</button>
+                        Correlación<br>Demográfica - Industrial
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top: 20px;">
+                <h3>Análisis de correlaciones</h3>
+                <div class="conclusion-text">
+                    Los datos muestran una correlación positiva fuerte (r=0.85) entre PM2.5 y PM10, así como una correlación moderada (r=0.62) entre densidad vehicular y niveles de contaminación. Las estaciones de monitoreo en áreas urbanas presentan patrones similares de contaminación.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(index) {
+            // Ocultar todas las pestañas
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            // Mostrar la pestaña seleccionada
+            tabs[index].classList.add('active');
+            buttons[index].classList.add('active');
+        }
+
+        // Simulación de interactividad para los filtros
+        document.addEventListener('DOMContentLoaded', function() {
+            const selects = document.querySelectorAll('select');
+            
+            selects.forEach(select => {
+                select.addEventListener('change', function() {
+                    console.log(`Filtro ${this.id} cambió a: ${this.value}`);
+                    // Aquí puedes agregar la lógica para actualizar gráficos
+                });
+            });
+
+            // Simulación de tooltips para valores AQI
+            const aiqValues = document.querySelectorAll('[title]');
+            aiqValues.forEach(element => {
+                element.style.cursor = 'help';
+            });
+
+            // Simulación de botones de zoom
+            const zoomButtons = document.querySelectorAll('.zoom-button');
+            zoomButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    alert('Función de zoom - Aquí se abriría la matriz en una ventana más grande');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
