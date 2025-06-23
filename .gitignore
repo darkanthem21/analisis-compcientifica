@@ -1,0 +1,6 @@
+.ipynb_checkpoints/
+.ropeproject/
+data/raw/RECT
+data/processed
+.gittoken
+__pycache__

@@ -62,35 +62,20 @@ MAPA_CONTAMINANTES_ESTANDAR = {
     'Ammonia': 'Amoniaco (NH3)',
     'Nitrógeno amoniacal (o NH3)': 'Amoniaco (NH3)',
     'Amoniaco (NH3)': 'Amoniaco (NH3)',
-
-    # MP2.5
-    'MP2,5': 'MP2.5', # Con coma
+    'MP2,5': 'MP2.5',
     'PM2.5, primary': 'MP2.5',
-    'MP2.5': 'MP2.5', # Estándar
-
-    # MP10
+    'MP2.5': 'MP2.5',
     'PM10, primary': 'MP10',
-    'MP10': 'MP10', # Estándar
-
-    # Material Particulado Total
-    'PM, primary': 'Material Particulado Total',
+    'MP10': 'MP10',    'PM, primary': 'Material Particulado Total',
     'Material particulado': 'Material Particulado Total',
     'Material Particulado Total': 'Material Particulado Total',
-
-    # Tolueno
     'Toluene': 'Tolueno',
     'Tolueno / metil benceno / Toluol / Fenilmetano': 'Tolueno',
     'Tolueno': 'Tolueno',
-
-    # Benceno
     'Benzene': 'Benceno',
     'Benceno': 'Benceno',
-
-    # PCDD/F (Dioxinas y Furanos)
     'PCDD-F': 'Dibenzoparadioxinas policloradas y furanos (PCDD/F)',
     'Dibenzoparadioxinas policloradas y furanos (PCDD/F)': 'Dibenzoparadioxinas policloradas y furanos (PCDD/F)',
-
-    # Contaminantes que no estaban antes pero aparecieron (decide el nombre estándar)
     'Carbono Negro': 'Carbono Negro', # O 'CN' si prefieres un código
     'Metano (CH4)': 'Metano (CH4)',
     'Oxido Nitroso': 'Óxido Nitroso (N2O)', # Sugerencia: añadir (N2O) y tilde
