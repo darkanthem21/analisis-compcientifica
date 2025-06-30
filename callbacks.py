@@ -3,8 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from charts import (
     create_chile_map, create_temporal_chart, create_emissions_chart,
-    create_correlation_heatmap, create_population_vs_pollution_scatter,
-    normalize_region_name
+    create_correlation_heatmap, create_population_vs_pollution_scatter
 )
 from components import (
     create_stations_tab, create_sources_tab, create_correlation_tab
@@ -394,7 +393,7 @@ def register_callbacks(app, df_air_quality, df_emissions, df_population):
                     info_components.append(
                         html.P([
                             html.I(className="fas fa-users text-info me-2"),
-                            f"Población total ({latest_year}): {region_pop:,.0f} habitantes"
+                            f"Población total (2023): {region_pop:,.0f} habitantes"
                         ], className="mb-2")
                     )
 

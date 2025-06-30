@@ -380,11 +380,8 @@ def main():
     try:
         # Ejecutar servidor
         app.run_server(
-            debug=True,
             port=8052,
             host='127.0.0.1',
-            dev_tools_hot_reload=True,
-            dev_tools_ui=True
         )
     except KeyboardInterrupt:
         print("\n\n👋 Dashboard detenido correctamente")

@@ -6,14 +6,12 @@ def create_header():
     return dbc.Container([
         dbc.Row([
             dbc.Col([
-                # Título principal con gradiente y mejor contraste
                 html.Div([
                     html.H1([
                         html.I(className="fas fa-wind me-3", style={'color': '#27AE60'}),
-                        "Dashboard Interactivo Calidad del Aire en Chile"
+                        "Dashboard Calidad del Aire en Chile"
                     ], className="text-center mb-4", style={'color': '#fff', 'fontWeight': 700, 'textShadow': '1px 2px 8px #2C3E50'}),
                     html.P(
-                        "Análisis integral de contaminación atmosférica, fuentes de emisión y correlaciones ambientales",
                         className="text-center lead mb-4",
                         style={'color': '#e0e0e0'}
                     )
@@ -25,7 +23,6 @@ def create_header():
                     'boxShadow': '0 10px 30px rgba(44,62,80,0.25)'
                 }),
 
-                # Navegación mejorada con efectos y colores accesibles
                 dbc.Row([
                     dbc.Col([
                         dbc.ButtonGroup([
@@ -146,7 +143,7 @@ def create_enhanced_aqi_legend():
         dbc.CardBody([
             html.H6([
                 html.I(className="fas fa-wind me-2"),
-                "ICA"
+                "AQI"
             ], className="text-center mb-3", style={'color': '#2C3E50', 'fontWeight': '600'}),
 
             # Escala visual compacta
@@ -252,9 +249,7 @@ def create_enhanced_aqi_legend():
         'backgroundColor': '#ffffff'
     })
 
-def create_aqi_legend():
-    """Versión simplificada de la leyenda AQI para compatibilidad"""
-    return create_enhanced_aqi_legend()
+
 
 def create_stations_tab():
     """Crea el contenido de la pestaña de estaciones con diseño mejorado y colores accesibles"""
@@ -365,9 +360,9 @@ def create_sources_tab():
                         dcc.Dropdown(
                             id="sources-chart-type",
                             options=[
-                                {'label': '📊 Análisis por Región', 'value': 'region'},
-                                {'label': '🔄 Distribución por Tipo de Fuente', 'value': 'source_type'},
-                                {'label': '📈 Evolución Temporal', 'value': 'temporal'}
+                                {'label': 'Análisis por Región', 'value': 'region'},
+                                {'label': 'Distribución por Tipo de Fuente', 'value': 'source_type'},
+                                {'label': 'Evolución Temporal', 'value': 'temporal'}
                             ],
                             value='region',
                             className="mb-3"
@@ -491,10 +486,10 @@ def create_correlation_tab():
                         dcc.Dropdown(
                             id="correlation-analysis-type",
                             options=[
-                                {'label': '🔥 Matriz de Correlación General', 'value': 'heatmap'},
-                                {'label': '👥 Población vs Contaminación', 'value': 'population_pollution'},
-                                {'label': '🏭 Emisiones vs Calidad del Aire', 'value': 'emissions_air_quality'},
-                                {'label': '📈 Análisis Temporal', 'value': 'temporal_correlation'}
+                                {'label': 'Matriz de Correlación General', 'value': 'heatmap'},
+                                {'label': 'Población vs Contaminación', 'value': 'population_pollution'},
+                                {'label': 'Emisiones vs Calidad del Aire', 'value': 'emissions_air_quality'},
+                                {'label': 'Análisis Temporal', 'value': 'temporal_correlation'}
                             ],
                             value='heatmap',
                             className="mb-3"

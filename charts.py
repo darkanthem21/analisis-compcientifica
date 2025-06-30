@@ -211,35 +211,6 @@ def get_color_for_pm25(pm25_value):
     category, color = get_aqi_category(pm25_value)
     return color
 
-def normalize_region_name(name):
-    """Normaliza nombres de regiones"""
-    if pd.isna(name):
-        return ""
-
-    name = str(name).strip()
-
-    # Mapeo de nombres de regiones
-    region_mapping = {
-        'Arica': 'Arica y Parinacota',
-        'Atacama': 'Atacama',
-        'Aysen': 'Aysén',
-        'Biobio': 'Biobío',
-        'La Araucanía': 'Araucanía',
-        'Los Lagos': 'Los Lagos',
-        'Los Rios': 'Los Ríos',
-        'Magallanes': 'Magallanes',
-        'Maule': 'Maule',
-        'Metropolitana': 'Metropolitana',
-        "O'Higgins": "O'Higgins",
-        'Tarapaca': 'Tarapacá',
-        'Valparaiso': 'Valparaíso',
-        'antofagasta': 'Antofagasta',
-        'coquimbo': 'Coquimbo',
-        'Ñuble': 'Ñuble',
-    }
-
-    return region_mapping.get(name, name)
-
 def map_geojson_region_name(geojson_name):
     """Mapea nombres de regiones del GeoJSON a nombres estándar"""
     if pd.isna(geojson_name):
@@ -309,9 +280,8 @@ def create_chile_map(df_air_quality, year_from=2019, year_to=2023):
         lats.append(coords['lat'])
         lons.append(coords['lon'])
         names.append(region)
-        colors.append('blue')  # Color simple para todas las regiones
+        colors.append('blue')
 
-    # Crear mapa simple con colores del tema
     fig = go.Figure()
 
     fig.add_trace(go.Scattermapbox(
@@ -331,7 +301,6 @@ def create_chile_map(df_air_quality, year_from=2019, year_to=2023):
         name='Regiones de Chile'
     ))
 
-    # Configuración del mapa con tema consistente para mostrar Chile completo
     fig.update_layout(
         mapbox=dict(
             style="open-street-map",
@@ -567,7 +536,7 @@ def create_emissions_by_region(df_emissions):
         x='region',
         y='cantidad_toneladas',
         color='tipo_fuente',
-        title='🏭 Emisiones por Región y Tipo de Fuente',
+        title='',
         labels={
             'cantidad_toneladas': 'Emisiones (toneladas)',
             'region': 'Región',
@@ -703,14 +672,14 @@ def create_correlation_heatmap(df_air_quality, df_population=None, df_emissions=
     """Crea matriz de correlación mejorada"""
 
     if df_air_quality is None or df_air_quality.empty:
-        return create_empty_correlation_chart()
+        return create_empty_correlation_figure()
 
     try:
         # Preparar datos para correlación
         df_corr = prepare_correlation_data(df_air_quality, df_population, df_emissions, variables)
 
         if df_corr.empty:
-            return create_empty_correlation_chart("Sin datos suficientes para correlación")
+            return create_empty_correlation_figure("Sin datos suficientes para correlación")
 
         # Calcular matriz de correlación
         corr_matrix = df_corr.corr()
@@ -720,7 +689,7 @@ def create_correlation_heatmap(df_air_quality, df_population=None, df_emissions=
             corr_matrix,
             text_auto='.2f',
             aspect="auto",
-            title='🔥 Matriz de Correlación - Variables Ambientales',
+            title='Matriz de Correlación',
             color_continuous_scale='RdBu_r',
             zmin=-1, zmax=1
         )
@@ -735,26 +704,26 @@ def create_correlation_heatmap(df_air_quality, df_population=None, df_emissions=
 
     except Exception as e:
         print(f"❌ Error creando heatmap de correlación: {e}")
-        return create_empty_correlation_chart(f"Error: {str(e)}")
+        return create_empty_correlation_figure(f"Error: {str(e)}")
 
 def create_population_vs_pollution_scatter(df_air_quality, df_population):
     """Crea gráfico de dispersión población vs contaminación con manejo robusto de NaN"""
 
     if df_air_quality is None or df_population is None:
-        return create_empty_correlation_chart("Datos insuficientes para análisis")
+        return create_empty_correlation_figure("Datos insuficientes para análisis")
 
     try:
         # Combinar datos
         df_combined = combine_air_quality_population(df_air_quality, df_population)
 
         if df_combined.empty:
-            return create_empty_correlation_chart("Sin datos combinados disponibles")
+            return create_empty_correlation_figure("Sin datos combinados disponibles")
 
         # Limpiar datos NaN y preparar para scatter plot
         df_combined = df_combined.dropna(subset=['poblacion', 'pm25', 'pm10'])
 
         if df_combined.empty:
-            return create_empty_correlation_chart("Sin datos válidos después de limpiar NaN")
+            return create_empty_correlation_figure("Sin datos válidos después de limpiar NaN")
 
         # Asegurar que los valores de tamaño sean positivos y finitos
         df_combined['pm10_size'] = df_combined['pm10'].fillna(10)  # valor por defecto si es NaN
@@ -800,7 +769,7 @@ def create_population_vs_pollution_scatter(df_air_quality, df_population):
 
     except Exception as e:
         print(f"❌ Error creando scatter plot: {e}")
-        return create_empty_correlation_chart(f"Error: {str(e)}")
+        return create_empty_correlation_figure(f"Error: {str(e)}")
 
 def prepare_correlation_data(df_air_quality, df_population, df_emissions, variables):
     """Prepara datos para análisis de correlación usando año más reciente"""
@@ -863,25 +832,7 @@ def combine_air_quality_population(df_air_quality, df_population):
 
     return df_combined
 
-def create_empty_correlation_chart(message="Sin datos para análisis de correlación"):
-    """Crea gráfico de correlación vacío"""
-    fig = go.Figure()
 
-    fig.add_annotation(
-        text=message,
-        xref="paper", yref="paper",
-        x=0.5, y=0.5,
-        showarrow=False,
-        font=dict(size=16, color="gray")
-    )
-
-    fig.update_layout(
-        height=600,
-        title="📊 Análisis de Correlación",
-        template='plotly_white'
-    )
-
-    return fig
 
 # ===== ANÁLISIS AVANZADO DE CORRELACIONES =====
 

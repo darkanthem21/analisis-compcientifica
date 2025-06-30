@@ -4,3 +4,4 @@ data/raw/RECT
 data/processed
 .gittoken
 __pycache__
+venv
