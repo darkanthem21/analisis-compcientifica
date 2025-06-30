@@ -379,7 +379,7 @@ def main():
 
     try:
         # Ejecutar servidor
-        app.run_server(
+        app.run(
             port=8052,
             host='127.0.0.1',
         )
